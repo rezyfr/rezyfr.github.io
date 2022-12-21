@@ -62674,7 +62674,7 @@ G.Nx.prototype={
 b4(){this.bG()
 P.cB(P.bX(0,5000,0),new G.a8w(this))},
 T(a,b){var s="splash_screen.json",r=null
-return M.aj8($.rT(),T.RB(T.Vf(new B.pO(X.ad8(s,250,250),X.ad8("plash_screen.json",200,200),X.ad8(s,150,150),r),"logo"),r,r),r,r)}}
+return M.aj8($.rT(),T.RB(T.Vf(new B.pO(X.ad8(s,250,250),X.ad8(s,200,200),X.ad8(s,150,150),r),"logo"),r,r),r,r)}}
 G.a8w.prototype={
 $0(){var s=this.a.c
 s.toString
