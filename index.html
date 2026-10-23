@@ -1,100 +1,657 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Fidriyanto Rizkillah, Senior Android Engineer. Kotlin, Jetpack Compose and fintech apps.">
+<title>Fidriyanto Rizkillah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap">
+<style>
+  /* Layout: sticky top bar, two-column hero (name left, phone with build log right), then one centered column of sections. */
+  :root {
+    color-scheme: light;
+    --bg: #f4eee3;
+    --surface: #fbf8f2;
+    --fg: #1d1912;
+    --muted: #5d5547;
+    --line: #dfd5c3;
+    --accent: #1d1912;
+    --accent-ink: #fbf8f2;
+    --accent-soft: #e8dfcd;
+    --placeholder: #ebe3d3;
+    --overlay: rgba(29, 25, 18, 0.5);
+    --screen: #1a1610;
+    --screen-fg: #e9e0cf;
+    --screen-dim: #9a8f7c;
+    --screen-hi: #f0cf8e;
+    --device: #2c261c;
+    --font-display: "Manrope", "Helvetica Neue", Arial, sans-serif;
+    --font-body: "Manrope", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+  }
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 120px; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    padding-block: 0 64px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  body.locked { overflow: hidden; }
+  body::before {
+    content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+    z-index: 30; background: var(--bg);
+  }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  h1, h2, h3, p, ul, dl { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  button { font: inherit; color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-  -->
-  <base href="/">
+  /* ---------- top bar ---------- */
+  .progress {
+    position: fixed; left: 0; right: 0; top: env(safe-area-inset-top, 0px); height: 3px;
+    background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); z-index: 40;
+  }
+  .top {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+    background: var(--bg); border-bottom: 1px solid var(--line);
+    margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+    padding-inline: max(16px, env(safe-area-inset-left, 0px));
+  }
+  .top .wrap { display: flex; align-items: center; gap: 12px 24px; padding-block: 12px; flex-wrap: wrap; }
+  .brand { font: 700 1rem/1 var(--font-display); letter-spacing: -0.01em; text-decoration: none; color: var(--fg); }
+  nav { flex: 1 1 auto; min-width: 0; overflow-x: auto; }
+  nav ul { display: flex; gap: 4px; font: 500 13px var(--font-mono); }
+  nav a { display: block; padding: 8px 12px; border-radius: 4px; color: var(--muted); text-decoration: none; white-space: nowrap; }
+  nav a:hover { color: var(--fg); background: var(--accent-soft); }
+  nav a[aria-current="true"] { color: var(--accent); background: var(--accent-soft); }
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="My Portofolio">
+  /* ---------- hero ---------- */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 56px; align-items: center; padding-block: 72px 56px; }
+  .eyebrow { font: 500 13px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  h1 {
+    margin-top: 14px;
+    font-family: var(--font-display); font-weight: 700;
+    font-weight: 800; font-size: clamp(2.6rem, 6.5vw, 4.6rem); line-height: 1; letter-spacing: -0.04em; text-wrap: balance;
+  }
+  .lede { margin-top: 24px; max-width: 34em; font: 500 clamp(1.15rem, 2vw, 1.4rem)/1.4 var(--font-display); letter-spacing: -0.01em; text-wrap: pretty; }
+  .sub { margin-top: 14px; max-width: 54ch; color: var(--muted); }
+  .chips { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font: 500 12px var(--font-mono); padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+  .cta { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    font: 500 14px var(--font-mono); text-decoration: none; cursor: pointer;
+    padding: 12px 18px; border-radius: 6px; border: 1px solid var(--accent);
+    background: var(--accent); color: var(--accent-ink);
+  }
+  .btn.ghost { background: transparent; color: var(--accent); }
+  .btn:hover { transform: translateY(-2px); }
 
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="portofolio">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  /* phone */
+  .phone-col { display: grid; justify-items: center; gap: 12px; }
+  .phone {
+    width: 100%; max-width: 300px; aspect-ratio: 9 / 18;
+    background: var(--device); border-radius: 36px; padding: 12px;
+    box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.45);
+  }
+  .screen {
+    height: 100%; background: var(--screen); border-radius: 26px; padding: 36px 16px 16px;
+    position: relative; overflow: hidden;
+    font: 400 12px/1.65 var(--font-mono); color: var(--screen-fg);
+  }
+  .screen::before {
+    content: ""; position: absolute; top: 10px; left: 50%; width: 64px; height: 8px;
+    transform: translateX(-50%); background: var(--device); border-radius: 8px;
+  }
+  .log li { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .log li.cmd { color: var(--screen-hi); }
+  .log li.dim { color: var(--screen-dim); }
+  .log li.ok { margin-top: 10px; color: var(--screen-hi); font-weight: 500; }
+  .log li.res { display: flex; justify-content: space-between; gap: 8px; }
+  .log li.res b { font-weight: 500; color: var(--screen-hi); }
+  .log li[hidden] { display: none; }
+  .cursor { display: inline-block; width: 7px; height: 13px; background: var(--screen-hi); vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  .replay { font: 500 12px var(--font-mono); background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px; cursor: pointer; color: var(--muted); }
+  .replay:hover { color: var(--accent); border-color: var(--accent); }
+  @keyframes blink { 50% { opacity: 0; } }
 
-  <title>Rezy FR</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  /* ---------- sections ---------- */
+  section { padding-block: 56px; border-top: 1px solid var(--line); }
+  .label { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
+  h2 { font: 700 clamp(1.6rem, 3vw, 2.2rem)/1.1 var(--font-display); letter-spacing: -0.02em; }
+  .hint { font: 400 12px/1.5 var(--font-mono); color: var(--muted); text-align: right; }
+
+  /* experience */
+  .release { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 8px 40px; padding-block: 32px; border-top: 1px solid var(--line); }
+  .release:first-of-type { border-top: 0; padding-top: 0; }
+  .when { font: 400 13px/1.5 var(--font-mono); color: var(--muted); padding-top: 6px; }
+  .release h3 { font: 700 1.5rem/1.2 var(--font-display); letter-spacing: -0.015em; }
+  .tag { display: inline-block; margin-left: 8px; vertical-align: 3px; font: 500 11px var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent); padding: 6px 10px; border-radius: 3px; }
+  .title { margin-top: 2px; font-weight: 600; font-size: 15px; }
+  .ctx { margin-top: 8px; color: var(--muted); font-size: 15px; max-width: 62ch; }
+  .release ul.pts { margin-top: 14px; display: grid; gap: 8px; max-width: 66ch; }
+  .release ul.pts li { position: relative; padding-left: 20px; font-size: 15px; }
+  .release ul.pts li::before { content: "+"; position: absolute; left: 0; font-family: var(--font-mono); color: var(--accent); font-weight: 500; }
+  .release ul.pts li b { font-weight: 600; }
+
+  .metrics { margin-top: 20px; max-width: 560px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 14px; }
+  .metrics-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font: 500 12px var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg button { border: 0; background: transparent; padding: 8px 14px; font: 500 12px var(--font-mono); cursor: pointer; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .m { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: baseline; }
+  .m-label { font-size: 14px; font-weight: 500; }
+  .m-label small { display: block; font: 400 12px/1.4 var(--font-mono); color: var(--muted); }
+  .m-val { font: 700 1.4rem/1 var(--font-display); color: var(--accent); font-variant-numeric: tabular-nums; text-align: right; }
+  .m-val .vb { display: none; color: var(--muted); }
+  .metrics[data-state="before"] .m-val .va { display: none; }
+  .metrics[data-state="before"] .m-val .vb { display: inline; }
+  .track { grid-column: 1 / -1; height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; width: 100%; transform-origin: 0 50%; transform: scaleX(calc(var(--after) / 100)); background: var(--accent); border-radius: 5px; transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .metrics[data-state="before"] .fill { transform: scaleX(calc(var(--before) / 100)); background: var(--muted); }
+
+  /* apps */
+  .note { margin-bottom: 24px; padding: 12px 14px; border-radius: 4px; background: var(--accent-soft); font: 400 13px/1.5 var(--font-mono); }
+  .apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 20px; }
+  .app { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: grid; gap: 16px; align-content: start; min-width: 0; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+  .app:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .shots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .shot { aspect-ratio: 9 / 19; max-width: 100%; background: var(--placeholder); border: 1.5px dashed var(--muted); border-radius: 12px; display: grid; place-items: center; text-align: center; font: 500 11px/1.3 var(--font-mono); color: var(--muted); padding: 8px; }
+  .shot.has-img { padding: 0; border: 1px solid var(--line); background: var(--placeholder); overflow: hidden; }
+  .shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .store.live { border: 0; padding: 0; }
+  .store.live a { display: inline-block; font: 500 13px var(--font-mono); background: var(--accent); color: var(--accent-ink); border-radius: 6px; padding: 10px 16px; text-decoration: none; }
+  .app h3 { font: 700 1.2rem/1.25 var(--font-display); }
+  .meta { font: 400 12px/1.5 var(--font-mono); color: var(--muted); margin-top: 2px; }
+  .app p { font-size: 14px; color: var(--muted); margin-top: 8px; }
+  .open { justify-self: start; font: 500 13px var(--font-mono); background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; padding: 8px 14px; cursor: pointer; }
+  .app:hover .open { background: var(--accent); color: var(--accent-ink); }
+
+  /* panel */
+  .overlay { position: fixed; inset: 0; z-index: 50; background: var(--overlay); display: grid; place-items: center; padding: 16px; }
+  .overlay[hidden] { display: none; }
+  .panel { width: min(100%, 720px); max-height: 100%; overflow-y: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 28px; display: grid; gap: 22px; }
+  .panel-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+  .panel h3 { font: 700 1.6rem/1.15 var(--font-display); letter-spacing: -0.015em; }
+  .close { font: 500 13px var(--font-mono); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+  .close:hover { border-color: var(--accent); color: var(--accent); }
+  .cs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; }
+  .cs div { padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+  .cs dt { font: 500 11px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .cs dd { margin: 4px 0 0; font-size: 14px; }
+  .cs dd.ph { color: var(--muted); font-style: italic; }
+  .store { justify-self: start; font: 500 12px var(--font-mono); border: 1.5px dashed var(--muted); color: var(--muted); border-radius: 4px; padding: 8px 12px; }
+
+  /* freelance, skills, education */
+  .plain { display: grid; gap: 28px; }
+  .plain h3 { font: 700 1.15rem/1.3 var(--font-display); }
+  .plain p { margin-top: 6px; font-size: 15px; max-width: 64ch; }
+  .stack { font: 400 12px/1.5 var(--font-mono); color: var(--accent); margin-top: 6px; }
+  .skills { display: grid; }
+  .skills > div { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 4px 32px; padding-block: 14px; border-top: 1px solid var(--line); }
+  .skills > div:first-child { border-top: 0; padding-top: 0; }
+  .skills dt { font: 500 12px/1.6 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .skills dd { margin: 0; font-size: 15px; }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 40px; }
+  .certs { display: grid; gap: 10px; font-size: 15px; }
+  .certs li { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .certs span { color: var(--muted); font: 400 12px/1.8 var(--font-mono); white-space: nowrap; }
+
+  /* contact */
+  .contact { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; }
+  .contact div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .contact dt { font: 500 11px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .contact dd { margin: 0; overflow-wrap: anywhere; user-select: all; }
+  .copy { justify-self: start; font: 500 12px var(--font-mono); background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 4px; padding: 8px 12px; cursor: pointer; }
+  footer { margin-top: 32px; font: 400 12px/1.6 var(--font-mono); color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-block: 48px 40px; }
+    .phone-col { justify-items: start; }
+  }
+  @media (max-width: 640px) {
+    .release { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+    .skills > div { grid-template-columns: minmax(0, 1fr); }
+    .hint { display: none; }
+    section { padding-block: 40px; }
+    .panel { padding: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fill, .app, .btn { transition: none; }
+    .app:hover, .btn:hover { transform: none; }
+    .cursor { animation: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+    .btn { transition: transform 0.15s; }
+  }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">Fidriyanto Rizkillah</a>
+    <nav aria-label="Sections">
+      <ul id="navlist">
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#apps">Production apps</a></li>
+        <li><a href="#personal">Now building</a></li>
+        <li><a href="#freelance">Freelance</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
   </div>
-  <script>
-    var serviceWorkerVersion = '651509414';
-    var scriptLoaded = false;
-    function loadMainDartJs() {
-      if (scriptLoaded) {
-        return;
-      }
-      scriptLoaded = true;
-      var scriptTag = document.createElement('script');
-      scriptTag.src = 'main.dart.js';
-      scriptTag.type = 'application/javascript';
-      document.body.append(scriptTag);
+</header>
+
+<div class="wrap" id="top">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Senior Android Engineer · Bangkok, Thailand</p>
+      <h1>Fidriyanto Rizkillah</h1>
+      <p class="lede">I build and tune Android apps for the financial industry. Six years of Kotlin, Jetpack Compose, clean architecture and MVVM.</p>
+      <p class="sub">At Social.plus I build SDK and UIKit features and a test harness. I also work across iOS and TypeScript, using AI-assisted and agentic workflows.</p>
+      <div class="chips" aria-label="Core skills">
+        <span class="chip">Kotlin</span><span class="chip">Jetpack Compose</span><span class="chip">Kotlin Flow</span><span class="chip">Baseline Profiles</span><span class="chip">CI/CD</span>
+      </div>
+      <div class="cta">
+        <a class="btn" href="#experience">See my work</a>
+        <a class="btn ghost" href="#contact">Get in touch</a>
+      </div>
+    </div>
+
+    <div class="phone-col">
+      <div class="phone" role="img" aria-label="Phone screen showing a build log that ends with build time down 78 percent, startup down 40 percent, app size down 30 percent and crash-free rate up from 70 to 98 percent">
+        <div class="screen">
+          <ul class="log" id="log" aria-hidden="true">
+            <li class="cmd">$ ./gradlew assembleRelease</li>
+            <li class="dim">&gt; Task :app:kspReleaseKotlin</li>
+            <li class="dim">&gt; Task :app:generateBaselineProfile</li>
+            <li class="dim">&gt; Task :app:assembleRelease</li>
+            <li class="ok">BUILD SUCCESSFUL</li>
+            <li class="res"><span>build time</span><b>-78%</b></li>
+            <li class="res"><span>startup</span><b>-40%</b></li>
+            <li class="res"><span>app size</span><b>-30%</b></li>
+            <li class="res"><span>crash-free</span><b>70 → 98%</b></li>
+            <li class="cmd">$ <span class="cursor"></span></li>
+          </ul>
+        </div>
+      </div>
+      <button class="replay" id="replay" type="button">Replay build</button>
+    </div>
+  </div>
+
+  <section id="experience" aria-labelledby="exp-h">
+    <div class="label"><h2 id="exp-h">Experience</h2><span class="hint">Use Before / After on a role to compare results</span></div>
+
+    <article class="release">
+      <div class="when">Dec 2025 – present</div>
+      <div>
+        <h3>Social.plus <span class="tag">Current</span></h3>
+        <p class="title">Android Engineer</p>
+        <p class="ctx">Engagement infrastructure behind consumer apps that drive usage, retention, and revenue.</p>
+        <ul class="pts">
+          <li>Architect and build a test harness factory to improve SDK robustness and ensure feature parity across platforms.</li>
+          <li>Drive end-to-end development of social commerce features across the UIKit and SDK layers.</li>
+          <li>Translate product requirements into technical specifications that serve as the engineering source of truth.</li>
+          <li>Partner with the SLE team to investigate and resolve client issues, improving product reliability and developer experience.</li>
+          <li>Contribute to the iOS and TypeScript platforms using AI and agentic AI workflows, and improve those workflows for day-to-day work.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="release">
+      <div class="when">May 2023 – Dec 2025</div>
+      <div>
+        <h3>Mandiri Sekuritas</h3>
+        <p class="title">Senior Android Engineer</p>
+        <p class="ctx">Built Growin', a high-performance stock trading and investment app, from scratch.</p>
+        <ul class="pts">
+          <li>Cut app build time by <b>78%</b> by migrating to KSP.</li>
+          <li>Improved app startup time and screen rendering by <b>40%</b> with Baseline Profiles.</li>
+          <li>Enhanced the Websocket integration and migrated it from RxJava to Kotlin Flow.</li>
+          <li>Found and fixed performance bottlenecks and memory leaks in features and core UI modules.</li>
+          <li>Built a testing culture in the team. Unit test coverage went from zero to <b>20%</b> and is still rising.</li>
+          <li>Set up CI/CD pipelines for automated builds and integrations with Jenkins and SonarCloud.</li>
+          <li>Reduced app size by <b>30%</b> by removing legacy code and redundancies.</li>
+        </ul>
+        <div class="metrics" data-state="after">
+          <div class="metrics-head"><span>Measured results</span>
+            <div class="seg" role="group" aria-label="Compare before and after">
+              <button type="button" data-set="before" aria-pressed="false">Before</button>
+              <button type="button" data-set="after" aria-pressed="true">After</button>
+            </div>
+          </div>
+          <div class="m" style="--before:100;--after:22"><div class="m-label">Build time<small>KSP migration. Bar length is relative to before.</small></div><div class="m-val"><span class="va">-78%</span><span class="vb">baseline</span></div><div class="track"><div class="fill"></div></div></div>
+          <div class="m" style="--before:100;--after:60"><div class="m-label">Startup and screen rendering<small>Baseline Profiles</small></div><div class="m-val"><span class="va">-40%</span><span class="vb">baseline</span></div><div class="track"><div class="fill"></div></div></div>
+          <div class="m" style="--before:100;--after:70"><div class="m-label">App size<small>Removed legacy code and redundancies</small></div><div class="m-val"><span class="va">-30%</span><span class="vb">baseline</span></div><div class="track"><div class="fill"></div></div></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="release">
+      <div class="when">Feb 2022 – Apr 2023</div>
+      <div>
+        <h3>Amartha Mikro Fintek</h3>
+        <p class="title">Senior Android Engineer</p>
+        <p class="ctx">Leading P2P lending platform in Indonesia. Managed and developed Amartha Partners, an offline-restricted, agent-focused app.</p>
+        <ul class="pts">
+          <li>Refactored legacy code to clean architecture, which improved testability and maintainability.</li>
+          <li>Mentored and paired with junior developers for a smooth onboarding and a positive team environment.</li>
+          <li>Designed and implemented event tracking with Firebase Events for detailed user behavior analytics.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="release">
+      <div class="when">Oct 2021 – Oct 2022</div>
+      <div>
+        <h3>Moni</h3>
+        <p class="title">Android Developer (part-time)</p>
+        <p class="ctx">Free financial recording app. Honorable Mention for Best Daily Apps 2022 from Google Play Store.</p>
+        <ul class="pts">
+          <li>Migrated Android XML views to Jetpack Compose and kept performance steady.</li>
+          <li>Set up CI/CD pipelines with GitLab CI for automated builds.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="release">
+      <div class="when">Jun 2021 – Apr 2023</div>
+      <div>
+        <h3>Home Credit Indonesia</h3>
+        <p class="title">Android Developer</p>
+        <ul class="pts">
+          <li>Led development and ongoing improvement of the PayLater and Payment features in the My Home Credit Indonesia app.</li>
+          <li>Improved app performance and user experience through iterative development.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="release">
+      <div class="when">Mar 2020 – Jan 2022</div>
+      <div>
+        <h3>Amartha Mikro Fintek</h3>
+        <p class="title">Android Engineer</p>
+        <ul class="pts">
+          <li>Raised the app crash-free rate from about 70% to about <b>98%</b>.</li>
+          <li>Refactored the architecture from MVP to MVVM. This reduced complexity and improved stability.</li>
+          <li>Implemented OCR and biometric liveness registration with a third-party library to support fraud prevention.</li>
+        </ul>
+        <div class="metrics" data-state="after">
+          <div class="metrics-head"><span>Measured results</span>
+            <div class="seg" role="group" aria-label="Compare before and after">
+              <button type="button" data-set="before" aria-pressed="false">Before</button>
+              <button type="button" data-set="after" aria-pressed="true">After</button>
+            </div>
+          </div>
+          <div class="m" style="--before:70;--after:98"><div class="m-label">Crash-free rate<small>MVP to MVVM refactor and stability work</small></div><div class="m-val"><span class="va">~98%</span><span class="vb">~70%</span></div><div class="track"><div class="fill"></div></div></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="release">
+      <div class="when">Jun 2019 – Sep 2019</div>
+      <div>
+        <h3>Cicil</h3>
+        <p class="title">Android Developer (intern)</p>
+        <ul class="pts">
+          <li>Developed the Cicil Ambassador application.</li>
+          <li>Migrated the codebase from Java to Kotlin for readability and maintainability.</li>
+        </ul>
+      </div>
+    </article>
+  </section>
+
+  <section id="apps" aria-labelledby="apps-h">
+    <div class="label"><h2 id="apps-h">Production apps</h2><span class="hint">Click a card to open its case study</span></div>
+    <!-- TODO: replace each .shot with an <img>, fill in APPS in the script below, and remove this note. -->
+    <p class="note">Screenshots and store links are in. Case study text (Problem, Approach) is still a placeholder.</p>
+    <div class="apps" id="apps-grid"></div>
+  </section>
+
+  <section id="personal" aria-labelledby="personal-h">
+    <div class="label"><h2 id="personal-h">Now building</h2><span class="hint">Click the card to open the case study</span></div>
+    <div class="apps" id="personal-grid"></div>
+  </section>
+
+  <section id="freelance" aria-labelledby="free-h">
+    <div class="label"><h2 id="free-h">Freelance projects</h2></div>
+    <div class="plain">
+      <div>
+        <h3>PLabs.id (Spiffify)</h3>
+        <p class="meta">Mobile Engineer · May 2024 – Nov 2024</p>
+        <p>Built a picture editor from scratch in Flutter. Users collage and edit collections of pictures. I worked on the Collage Lookbook and Timeline features.</p>
+        <p class="stack">Flutter · Bloc · ImagePainter · Localization · RxDart</p>
+      </div>
+      <div>
+        <h3>Adidata Informatika (SPM Transjakarta)</h3>
+        <p class="meta">Mobile Developer · Feb 2021 – Feb 2022</p>
+        <p>Developed and released the Transjakarta SPM apps from scratch. Fieldworkers use them to report the condition of buses, bus stations and busways in real time.</p>
+        <p class="stack">Flutter · Bloc · RxDart</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" aria-labelledby="skills-h">
+    <div class="label"><h2 id="skills-h">Skills</h2></div>
+    <dl class="skills">
+      <div><dt>Mobile</dt><dd>Kotlin, Java, Jetpack Compose, Flutter, Android NDK (C++)</dd></div>
+      <div><dt>Architecture</dt><dd>Clean Architecture, MVVM, MVP, Koin, Dagger2, Kotlin Flow, RxJava, Room, WorkManager, OkHttp Websocket</dd></div>
+      <div><dt>Performance and build</dt><dd>Baseline Profiles, KSP</dd></div>
+      <div><dt>Testing and quality</dt><dd>MockK, Mockito, SonarQube, SonarCloud</dd></div>
+      <div><dt>CI/CD</dt><dd>Jenkins, GitLab CI</dd></div>
+      <div><dt>Languages</dt><dd>English (professional working proficiency), Indonesian (native), Japanese (elementary)</dd></div>
+    </dl>
+  </section>
+
+  <section id="education" aria-labelledby="edu-h">
+    <div class="label"><h2 id="edu-h">Education and certifications</h2></div>
+    <div class="two">
+      <div class="plain">
+        <div>
+          <h3>Bachelor of Computer Science</h3>
+          <p class="meta">Universitas Padjadjaran · 2016 – 2020</p>
+        </div>
+      </div>
+      <ul class="certs">
+        <li>Android Development, Expert <span>Dicoding</span></li>
+        <li>Back-end Development, Fundamental (Hapi, Express, GCP) <span>Dicoding</span></li>
+        <li>Flutter Development, Fundamental <span>Dicoding</span></li>
+        <li>iOS Development, Fundamental (Swift) <span>Dicoding</span></li>
+        <li>AWS Cloud, Beginner <span>Dicoding</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact" aria-labelledby="contact-h">
+    <div class="label"><h2 id="contact-h">Contact</h2></div>
+    <dl class="contact">
+      <div><dt>Email</dt><dd id="email">frizkillah98@gmail.com</dd><button class="copy" id="copy" type="button">Copy email</button></div>
+      <div><dt>Phone</dt><dd>+62 812 9316 8889</dd></div>
+      <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/rezyfr">linkedin.com/in/rezyfr</a></dd></div>
+      <div><dt>GitHub</dt><dd><a href="https://github.com/rezyfr">github.com/rezyfr</a></dd></div>
+    </dl>
+    <footer>Fidriyanto Rizkillah · Senior Android Engineer · Bangkok, Thailand</footer>
+  </section>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="p-name" id="panel">
+    <div class="panel-head">
+      <div><h3 id="p-name"></h3><p class="meta" id="p-meta"></p></div>
+      <button class="close" id="close" type="button">Close</button>
+    </div>
+    <div class="shots" id="p-shots"><div class="shot">Screenshot 1</div><div class="shot">Screenshot 2</div><div class="shot">Screenshot 3</div></div>
+    <dl class="cs">
+      <div><dt>Problem</dt><dd class="ph" id="p-problem"></dd></div>
+      <div><dt>My role</dt><dd id="p-role"></dd></div>
+      <div><dt>Approach</dt><dd class="ph" id="p-approach"></dd></div>
+      <div><dt>Result</dt><dd id="p-result"></dd></div>
+    </dl>
+    <span class="store" id="p-store"></span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- apps (placeholders: edit here) ---------- */
+  var APPS = [
+    { name: "Growin'", img: "growin", meta: "Mandiri Sekuritas · 2023 – 2025", blurb: "Stock trading and investment app, built from scratch.", role: "Senior Android Engineer", result: "Build time -78%, startup and rendering -40%, app size -30%.", url: "https://play.google.com/store/apps/details?id=id.growin.mandirisekuritas" },
+    { name: "Amartha Partners", img: "amartha", meta: "Amartha Mikro Fintek · 2020 – 2023", blurb: "Offline-restricted, agent-focused app for a P2P lending platform.", role: "Android Engineer, then Senior Android Engineer", result: "Crash-free rate from about 70% to about 98%.", url: "https://play.google.com/store/apps/details?id=com.amf.superapp.release" },
+    { name: "My Home Credit Indonesia", img: "homecredit", meta: "Home Credit Indonesia · 2021 – 2023", blurb: "PayLater and Payment features.", role: "Android Developer. Led PayLater and Payment features.", result: "Result: add later", url: "https://play.google.com/store/apps/details?id=id.co.myhomecredit" },
+    { name: "Moni", img: "moni", meta: "Moni · 2021 – 2022", blurb: "Free financial recording app. Honorable Mention, Best Daily Apps 2022.", role: "Android Developer (part-time)", result: "Honorable Mention, Best Daily Apps 2022, Google Play Store.", url: "https://play.google.com/store/apps/details?id=id.monee.app" },
+    { name: "Transjakarta SPM", img: "spm", meta: "Adidata Informatika · freelance · 2021 – 2022", blurb: "Field report app for bus, station and busway conditions.", role: "Mobile Developer (Flutter). Built and released from scratch.", result: "Result: add later", url: "https://play.google.com/store/apps/details?id=com.spm.spm_app" },
+    { name: "Spiffify", img: "spiffify", meta: "PLabs.id · freelance · 2024", blurb: "Picture editor built from scratch in Flutter, with collage, Lookbook and Timeline features.", role: "Mobile Engineer (Flutter)", result: "Result: add later", url: "https://play.google.com/store/apps/details?id=app.spiffify.spiffify_app" },
+    { name: "FinTrack", group: "personal", img: "fintrack", meta: "Personal project · in progress · Android and web", blurb: "Personal finance tracker. It reads bank notifications, sorts them with rules you write, and keeps every currency in its own book.", role: "Building it end to end: Android app, web app and server.", problem: "Tracking money across several currencies and a pay cycle, without typing in every payment.", approach: "Layered Android app: Jetpack Compose, Material 3, MVVM, Hilt, Room, DataStore and Retrofit. Payments are captured from bank notifications and sorted by user-written rules. An optional on-device AI model (LiteRT-LM) answers questions about spending. A React 19 web app and a REST API on PostgreSQL complete it.", result: "In progress. Rules, scheduled transactions, budgets, insights and the web app are built.", store: "Source: private repository" },
+    { name: "Social.plus SDK and UIKit", meta: "Social.plus · 2025 – present", blurb: "Social commerce features across the UIKit and SDK layers.", role: "Android Engineer", result: "Result: add later", store: "Docs link: add later" }
+  ];
+  function shotsHtml(a) {
+    var out = "";
+    for (var k = 1; k <= 3; k++) {
+      out += a.img
+        ? '<div class="shot has-img"><img src="img/' + a.img + '-' + k + '.jpg" alt="' + a.name + ' screenshot ' + k + '" loading="lazy" width="360"></div>'
+        : '<div class="shot">Screenshot ' + k + '</div>';
     }
+    return out;
+  }
+  var grid = $("#apps-grid");
+  APPS.forEach(function (a, i) {
+    var el = document.createElement("article");
+    el.className = "app";
+    el.dataset.i = i;
+    el.innerHTML = '<div class="shots">' + shotsHtml(a) + '</div>' +
+      '<div><h3></h3><p class="meta"></p><p></p></div><button class="open" type="button">Open case study</button>';
+    $("h3", el).textContent = a.name;
+    $(".meta", el).textContent = a.meta;
+    $("div p:last-child", el).textContent = a.blurb;
+    (a.group === "personal" ? $("#personal-grid") : grid).appendChild(el);
+  });
 
-    if ('serviceWorker' in navigator) {
-      // Service workers are supported. Use them.
-      window.addEventListener('load', function () {
-        // Wait for registration to finish before dropping the <script> tag.
-        // Otherwise, the browser will load the script multiple times,
-        // potentially different versions.
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-        navigator.serviceWorker.register(serviceWorkerUrl)
-          .then((reg) => {
-            function waitForActivation(serviceWorker) {
-              serviceWorker.addEventListener('statechange', () => {
-                if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
-                  loadMainDartJs();
-                }
-              });
-            }
-            if (!reg.active && (reg.installing || reg.waiting)) {
-              // No active web worker and we have installed or are installing
-              // one for the first time. Simply wait for it to activate.
-              waitForActivation(reg.installing ?? reg.waiting);
-            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              // When the app updates the serviceWorkerVersion changes, so we
-              // need to ask the service worker to update.
-              console.log('New service worker available.');
-              reg.update();
-              waitForActivation(reg.installing);
-            } else {
-              // Existing service worker is still good.
-              console.log('Loading app from service worker.');
-              loadMainDartJs();
-            }
-          });
-
-        // If service worker doesn't succeed in a reasonable amount of time,
-        // fallback to plaint <script> tag.
-        setTimeout(() => {
-          if (!scriptLoaded) {
-            console.warn(
-              'Failed to load app from service worker. Falling back to plain <script> tag.',
-            );
-            loadMainDartJs();
-          }
-        }, 4000);
-      });
+  /* ---------- case study panel ---------- */
+  var overlay = $("#overlay"), lastFocus = null;
+  function openPanel(i, opener) {
+    var a = APPS[i];
+    lastFocus = opener;
+    $("#p-name").textContent = a.name;
+    $("#p-meta").textContent = a.meta;
+    $("#p-problem").textContent = a.problem || "Add later: what problem did this app solve, and for whom?";
+    $("#p-problem").classList.toggle("ph", !a.problem);
+    $("#p-role").textContent = a.role;
+    $("#p-approach").textContent = a.approach || "Add later: key technical decisions and trade-offs.";
+    $("#p-approach").classList.toggle("ph", !a.approach);
+    $("#p-result").textContent = a.result;
+    $("#p-shots").innerHTML = shotsHtml(a);
+    var st = $("#p-store");
+    if (a.url) {
+      st.className = "store live";
+      st.innerHTML = '<a href="' + a.url + '" target="_blank" rel="noopener">View on Google Play</a>';
     } else {
-      // Service workers not supported. Just drop the <script> tag.
-      loadMainDartJs();
+      st.className = "store";
+      st.textContent = a.store;
     }
-  </script>
+    overlay.hidden = false;
+    document.body.classList.add("locked");
+    $("#close").focus();
+  }
+  function closePanel() {
+    overlay.hidden = true;
+    document.body.classList.remove("locked");
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  document.addEventListener("click", function (e) {
+    var card = e.target.closest(".app");
+    if (card) openPanel(+card.dataset.i, $(".open", card));
+  });
+  $("#close").addEventListener("click", closePanel);
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) closePanel(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !overlay.hidden) closePanel();
+    if (e.key === "Tab" && !overlay.hidden) {
+      var f = $$("button", $("#panel"));
+      if (f.length) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+
+  /* ---------- before / after ---------- */
+  $$(".metrics").forEach(function (box) {
+    $$(".seg button", box).forEach(function (b) {
+      b.addEventListener("click", function () {
+        box.dataset.state = b.dataset.set;
+        $$(".seg button", box).forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      });
+    });
+  });
+
+  /* ---------- hero build log ---------- */
+  var log = $("#log"), lines = $$("li", log), timer = null;
+  function play() {
+    clearTimeout(timer);
+    if (reduce) { lines.forEach(function (l) { l.hidden = false; }); return; }
+    lines.forEach(function (l) { l.hidden = true; });
+    var i = 0;
+    (function next() {
+      if (i >= lines.length) return;
+      lines[i].hidden = false;
+      var cls = lines[i].className;
+      i++;
+      timer = setTimeout(next, cls === "ok" ? 600 : cls === "res" ? 260 : 380);
+    })();
+  }
+  $("#replay").addEventListener("click", play);
+  play();
+
+  /* ---------- scroll progress and active section ---------- */
+  var bar = $("#progress");
+  function onScroll() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = "scaleX(" + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ")";
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+  var links = $$("#navlist a");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          links.forEach(function (a) { a.setAttribute("aria-current", String(a.getAttribute("href") === "#" + en.target.id)); });
+        }
+      });
+    }, { rootMargin: "-30% 0px -60% 0px" });
+    $$("section").forEach(function (s) { io.observe(s); });
+  }
+
+  /* ---------- copy email ---------- */
+  var btn = $("#copy"), email = $("#email");
+  btn.addEventListener("click", function () {
+    var text = email.textContent.trim();
+    function done() { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy email"; }, 1800); }
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(email);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      btn.textContent = "Selected";
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  });
+})();
+</script>
 </body>
 </html>
